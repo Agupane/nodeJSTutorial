@@ -1,4 +1,3 @@
-
 const Joi = require('joi')
 
 // require and configure dotenv, will load vars in .env in PROCESS.ENV
@@ -17,7 +16,10 @@ const envVarsSchema = Joi.object({
     .description('Mongo DB password admin'),
   MONGO_USER: Joi.string()
     .required()
-    .description('Mongo DB admin user')
+    .description('Mongo DB admin user'),
+  MONGO_DB_NAME: Joi.string()
+    .required()
+    .description('Mongo DB name')
 })
   .unknown()
   .required()
@@ -32,6 +34,7 @@ const config = {
   mongo: {
     host: envVars.MONGO_HOST,
     user: envVars.MONGO_USER,
+    db: envVars.MONGO_DB_NAME,
     pwd: envVars.MONGO_PWD
   },
 }
