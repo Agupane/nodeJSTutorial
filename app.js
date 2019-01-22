@@ -20,21 +20,34 @@ const shopRoutes = require('./routes/shop');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-/*
 app.use((req, res, next) => {
-  User.findById('5c472d5d1c9d44000057af10')
+  User.findById('5c47501def384b6dc2e99d6c')
     .then(user => {
-      req.user = new User(user.name, user.email, user.cart, user._id);
+      req.user = user;
       next();
     })
     .catch(err => console.log(err));
 });
-*/
+
+
+
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
 app.use(errorController.get404);
 
 mongoConnect(() => {
+  User.findOne().then(user =>{
+    if(!user) {
+      const user = new User({
+        name: 'Agustin',
+        email: 'apane@test.com',
+        cart: {
+          items: []
+        }
+      })
+      user.save();
+    }
+  })
   app.listen(3000);
 });
