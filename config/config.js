@@ -8,9 +8,6 @@ const envVarsSchema = Joi.object({
   NODE_ENV: Joi.string()
     .allow(['development', 'production', 'test', 'provision'])
     .default('development'),
-  MONGO_HOST: Joi.string()
-    .required()
-    .description('Mongo DB host url'),
   MONGO_PWD: Joi.string()
     .required()
     .description('Mongo DB password admin'),
