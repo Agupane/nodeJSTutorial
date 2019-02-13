@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Image from '../../../components/Image/Image';
 import './SinglePost.css';
-
+const URL_API = 'http://localhost:8080/graphql'
 class SinglePost extends Component {
   state = {
     title: '',
@@ -14,18 +14,36 @@ class SinglePost extends Component {
 
   componentDidMount() {
     const postId = this.props.match.params.postId;
-    fetch('http://localhost:8080/feed/post/' + postId, {
+    const graphqlQuery = {
+      query: `
+      query {
+        post(id: "${postId}") {
+          title
+          content
+          imageUrl   
+          creator {
+            name
+          }
+          createdAt
+       }
+      }`
+    }
+    fetch(URL_API, {
+      method: 'POST',
       headers: {
-        Authorization: 'Bearer ' + this.props.token
-      }
+        Authorization: 'Bearer ' + this.props.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(graphqlQuery)
     })
       .then(res => {
-        if (res.status !== 200) {
-          throw new Error('Failed to fetch status');
-        }
         return res.json();
       })
-      .then(resData => {
+      .then(responseData => {
+        let resData = responseData.data
+        if (responseData.errors) {
+          throw new Error('Fetching post failed!');
+        }
         this.setState({
           title: resData.post.title,
           author: resData.post.creator.name,
