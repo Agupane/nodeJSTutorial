@@ -61,10 +61,11 @@ class App extends Component {
   loginHandler = (event, authData) => {
     event.preventDefault();
     const graphqlQuery = {
-      query: `
+      query: `{
       login(email: "${authData.email}", password: "${authData.password}") {
-        token
-        userId
+          token
+          userId
+        }
       }`
     }
     this.setState({ authLoading: true });
@@ -76,25 +77,25 @@ class App extends Component {
       body: JSON.stringify(graphqlQuery)
     })
       .then(res => {
-        if (res.status === 422) {
-          throw new Error('Validation failed.');
-        }
-        if (res.status !== 200 && res.status !== 201) {
-          console.log('Error!');
-          throw new Error('Could not authenticate you!');
-        }
         return res.json();
       })
-      .then(resData => {
-        console.log(resData);
+      .then(responseData => {
+        if(responseData.errors && responseData.errors[0].status === 422) {
+          throw new Error('Validation failed. Make sure the email is not used yet!')
+        }
+        if(responseData.errors) {
+          throw new Error('User login failed!')
+        }
+        let resData  = responseData.data
+        console.log("reeeees" , resData);
         this.setState({
           isAuth: true,
-          token: resData.token,
+          token: resData.login.token,
           authLoading: false,
-          userId: resData.userId
+          userId: resData.login.userId
         });
-        localStorage.setItem('token', resData.token);
-        localStorage.setItem('userId', resData.userId);
+        localStorage.setItem('token', resData.login.token);
+        localStorage.setItem('userId', resData.login.userId);
         const remainingMilliseconds = 60 * 60 * 1000;
         const expiryDate = new Date(
           new Date().getTime() + remainingMilliseconds
