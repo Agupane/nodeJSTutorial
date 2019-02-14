@@ -24,19 +24,32 @@ class Feed extends Component {
   };
 
   componentDidMount() {
-    fetch('http://localhost:8080/auth/status', {
-      headers: {
-        Authorization: 'Bearer ' + this.props.token
+    const graphqlQuery = {
+      query: ` 
+      {
+        user{
+          status 
+        }
       }
+      `
+    }
+    fetch(URL_API, {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + this.props.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(graphqlQuery)
     })
       .then(res => {
-        if (res.status !== 200) {
-          throw new Error('Failed to fetch user status.');
-        }
         return res.json();
       })
       .then(resData => {
-        this.setState({ status: resData.status });
+        console.error(resData)
+        if(resData.errors) {
+          throw new Error('Feching status failed!')
+        }
+        this.setState({ status: resData.data.user.status });
       })
       .catch(this.catchError);
 
@@ -110,27 +123,39 @@ class Feed extends Component {
   };
 
   statusUpdateHandler = event => {
+    console.log("updating status")
     event.preventDefault();
-    fetch('http://localhost:8080/auth/status', {
-      method: 'PATCH',
+    const graphqlQuery = {
+      query: `
+        mutation {
+          updateStatus(status: "${this.state.status}") {
+            status
+          }
+        }
+      `
+    }
+    fetch(URL_API, {
+      method: 'POST',
       headers: {
         Authorization: 'Bearer ' + this.props.token,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        status: this.state.status
-      })
+      body: JSON.stringify(graphqlQuery)
     })
       .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error("Can't update status!");
-        }
         return res.json();
       })
       .then(resData => {
         console.log(resData);
+        if (resData.errors) {
+          throw new Error('Fetching posts failed!');
+        }
       })
-      .catch(this.catchError);
+      .catch(error =>
+      {
+        console.error(error)
+        this.catchError(error)
+      })
   };
 
   newPostHandler = () => {

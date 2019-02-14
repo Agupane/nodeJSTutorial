@@ -5,7 +5,7 @@ const user = mongo.user
 const pwd = mongo.pwd
 const dbName = mongo.db
 const uri = 'mongodb+srv://'+user+':'+pwd+'@examplecluster-unirs.mongodb.net/'+dbName+'?retryWrites=true'
-
+console.log("URI ", uri)
 const mongoConnect = (callback) => {
   mongoose.connect(uri)
     .then(client => {

@@ -134,10 +134,6 @@ class App extends Component {
       body: JSON.stringify(graphqlQuery)
     })
       .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          console.log('Error!');
-          throw new Error('Creating a user failed!');
-        }
         return res.json();
       })
       .then(resData => {
@@ -147,6 +143,7 @@ class App extends Component {
           );
         }
         if(resData.errors) {
+          console.error(resData)
           throw new Error('User creation file')
         }
         console.log(resData);

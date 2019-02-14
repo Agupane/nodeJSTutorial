@@ -37,7 +37,7 @@ module.exports = {
       name: userInput.name,
       password: hashedPw
     })
-    const createUser = await User.save()
+    const createdUser = await user.save()
     return { ...createdUser._doc, _id: createdUser._id.toString()}
   },
   login: async ({email, password}) => {
@@ -195,5 +195,42 @@ module.exports = {
     user.posts.pull(id)
     await user.save()
     return true
+  },
+  user: async (args, req) => {
+    if(!req.isAuth) {
+      const error = new Error('Not authenticated')
+      error.code = 401
+      throw error
+    }
+    const user = await User.findById(req.userId)
+    if(!user) {
+      const error = new Error('Not user found')
+      error.code = 404
+      throw error
+    }
+    return {
+      ...user._doc,
+      _id: user._id.toString()
+    }
+  },
+  updatedStatus: async ({status}, req) => {
+    console.log("status ", status)
+    if(!req.isAuth) {
+      const error = new Error('Not authenticated')
+      error.code = 401
+      throw error
+    }
+    const user = await User.findById(userId)
+    if(!user) {
+      const error = new Error('Not user found')
+      error.code = 404
+      throw error
+    }
+    user.status = status
+    await user.save()
+    return {
+      ...user._doc,
+      _id: user._id.toString()
+    }
   }
 }
