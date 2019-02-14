@@ -1,0 +1,11 @@
+/* eslint-env node, mocha */
+{
+  "parserOptions": {
+    "ecmaVersion": 7,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "extends": ["plugin:prettier/recommended"]
+}

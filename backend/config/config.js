@@ -33,7 +33,7 @@ const config = {
     user: envVars.MONGO_USER,
     db: envVars.MONGO_DB_NAME,
     pwd: envVars.MONGO_PWD
-  },
+  }
 }
 
 module.exports = config
