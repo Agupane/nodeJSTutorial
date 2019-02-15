@@ -18,7 +18,6 @@ app.use('/api/images', express.static(path.join(__dirname, 'assets/images')))
 
 /** Error handling **/
 app.use((error, req, res, next) => {
-  console.error(error)
   const status = error.statusCode || 500
   const message = error.message
   res.status(status).json({ message: message })

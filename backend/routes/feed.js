@@ -24,5 +24,6 @@ router
   .route('/posts/:postId')
   .get(feedController.getPost)
   .put(feedController.updatePost)
+  .delete(feedController.deletePost)
 
 module.exports = router

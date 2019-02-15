@@ -5,11 +5,17 @@ const path = require('path')
 
 const getPosts = async (req, res, next) => {
   console.log('returning posts')
+  const currentPage = req.query.page || 1
+  const perPage = 2
   try {
+    let totalItems = await Post.find().countDocuments()
     let posts = await Post.find()
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage)
     res.status(200).json({
       message: 'Fetched posts successfully',
-      posts: posts
+      posts: posts,
+      totalItems: totalItems
     })
   } catch (error) {
     if (!err.statusCode) {
@@ -56,7 +62,6 @@ const createPost = async (req, res, next) => {
 const getPost = async (req, res, next) => {
   console.log('getting post with params ', req.params.postId)
   const postId = req.params.postId
-
   try {
     let post = await Post.findById(postId)
     if (!post) {
@@ -117,6 +122,21 @@ const updatePost = async (req, res, next) => {
   }
 }
 
+const deletePost = async (req, res, next) => {
+  const postId = req.params.postId
+  try {
+    let post = await Post.findById(postId)
+    if (!post) {
+      const error = new Error('Could not find post')
+      error.statusCode = 404
+      throw error
+    }
+    clearImage(post.imageUrl)
+    await Post.findByIdAndRemove(postId)
+    res.status(200).json({ message: 'Deleted post' })
+  } catch (error) {}
+}
+
 const clearImage = filePath => {
   filePath = path.join(__dirname, '..', filePath)
   fs.unlink(filePath, err => console.error(err))
@@ -126,5 +146,6 @@ module.exports = {
   getPosts,
   getPost,
   updatePost,
-  createPost
+  createPost,
+  deletePost
 }
