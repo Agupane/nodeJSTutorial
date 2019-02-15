@@ -1,4 +1,5 @@
 const { validationResult } = require('express-validator/check')
+const Post = require('../models/post')
 
 const getPosts = (req, res, next) => {
   console.log('returning posts')
@@ -18,7 +19,7 @@ const getPosts = (req, res, next) => {
   })
 }
 
-const createPost = (req, res, next) => {
+const createPost = async (req, res, next) => {
   console.log('creating posts')
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
@@ -29,20 +30,27 @@ const createPost = (req, res, next) => {
   }
   const title = req.body.title
   const content = req.body.content
-  // Create post in db
-  res.json({
-    message: 'Post created successfully!',
-    post: {
-      _id: new Date().toISOString(),
-      title: title,
-      content: content,
-      imagesUrl: 'assets/images/index.jpeg',
-      creator: {
-        name: 'Test'
-      },
-      date: new Date()
+  const post = new Post({
+    title: title,
+    content: content,
+    imageUrl: 'assets/images/index.jpeg',
+    creator: {
+      name: 'Test'
     }
   })
+  try {
+    const result = await post.save()
+    // Create post in db
+    res.json({
+      message: 'Post created successfully!',
+      post: result
+    })
+  } catch (error) {
+    console.error(error)
+    res.status(422).json({
+      message: 'Could not create post'
+    })
+  }
 }
 
 module.exports = {
