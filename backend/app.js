@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const indexRoutes = require('./routes/index')
 const cors = require('cors')
 const mongoConnect = require('./util/database').mongoConnect
+const path = require('path')
 
 const app = express()
 
@@ -13,6 +14,7 @@ app.use(cors())
 
 /** Configures routes **/
 app.use('/api', indexRoutes)
+app.use('/api/images', express.static(path.join(__dirname, 'assets/images')))
 
 /** Error handling **/
 app.use((error, req, res, next) => {

@@ -3,14 +3,13 @@ const Post = require('../models/post')
 
 const getPosts = async (req, res, next) => {
   console.log('returning posts')
-  try{
+  try {
     let posts = await Post.find()
     res.status(200).json({
       message: 'Fetched posts successfully',
       posts: posts
     })
-  }
-  catch(error){
+  } catch (error) {
     if (!err.statusCode) {
       err.statusCode = 500
     }
@@ -31,7 +30,7 @@ const createPost = async (req, res, next) => {
   const post = new Post({
     title: title,
     content: content,
-    imageUrl: 'assets/images/index.jpeg',
+    imageUrl: '/images/index.jpeg',
     creator: {
       name: 'Test'
     }
@@ -53,7 +52,7 @@ const createPost = async (req, res, next) => {
 }
 
 const getPost = async (req, res, next) => {
-  console.log("getting post with params ", req.params.postId)
+  console.log('getting post with params ', req.params.postId)
   const postId = req.params.postId
 
   try {

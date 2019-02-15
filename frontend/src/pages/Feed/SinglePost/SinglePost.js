@@ -18,17 +18,18 @@ class SinglePost extends Component {
   componentDidMount = async () => {
     const postId = this.props.match.params.postId
     try {
-      let resData = await axios.get(API_URL + 'feed/post/' + postId)
-      console.log("post ", resData)
+      let resData = await axios.get(API_URL + 'feed/posts/' + postId)
+      let postData = resData.data
+      console.log("img url ", postData.post.imageUrl)
       this.setState({
-        title: resData.post.title,
-        author: resData.post.creator.name,
-        image: API_URL + resData.post.imageUrl,
-        date: new Date(resData.post.createdAt).toLocaleDateString('en-US'),
-        content: resData.post.content
+        title: postData.post.title,
+        author: postData.post.creator.name,
+        image: API_URL + postData.post.imageUrl,
+        date: new Date(postData.post.createdAt).toLocaleDateString('en-US'),
+        content: postData.post.content
       })
     } catch (error) {
-      console.error(error)
+      console.error("error: ", error)
     }
   }
 
