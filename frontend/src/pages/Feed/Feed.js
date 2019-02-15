@@ -101,12 +101,15 @@ class Feed extends Component {
       editLoading: true
     });
     // Set up data (with image!)
-    let url = API_URL;
-    if (this.state.editPost) {
-      url = API_URL;
-    }
     try{
-      let resData = await axios.get(url)
+      let url = API_URL+'/feed/posts';
+      let resData
+      if (this.state.editPost) {
+        url = API_URL;
+        //resData = await axios.put(url)
+      } else {
+        resData = await axios.post(url, postData)
+      }
       if (resData.status !== 200 && resData.status !== 201) {
         throw new Error('Creating or editing a post failed!');
       }
@@ -118,7 +121,7 @@ class Feed extends Component {
         creator: resData.post.creator,
         createdAt: resData.post.createdAt
       };
-
+      console.log("POSTS UPDATED ", resData)
       this.setState(prevState => {
         let updatedPosts = [...prevState.posts];
         if (prevState.editPost) {
