@@ -14,6 +14,14 @@ app.use(cors())
 /** Configures routes **/
 app.use('/api', indexRoutes)
 
+/** Error handling **/
+app.use((error, req, res, next) => {
+  console.error(error)
+  const status = error.statusCode || 500
+  const message = error.message
+  res.status(status).json({ message: message })
+})
+
 app.listen(3000, () => {
   console.log('Node up and running in port 3000')
 })

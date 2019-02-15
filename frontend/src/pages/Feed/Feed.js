@@ -1,13 +1,13 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment } from 'react'
 
-import Post from '../../components/Feed/Post/Post';
-import Button from '../../components/Button/Button';
-import FeedEdit from '../../components/Feed/FeedEdit/FeedEdit';
-import Input from '../../components/Form/Input/Input';
-import Paginator from '../../components/Paginator/Paginator';
-import Loader from '../../components/Loader/Loader';
-import ErrorHandler from '../../components/ErrorHandler/ErrorHandler';
-import './Feed.css';
+import Post from '../../components/Feed/Post/Post'
+import Button from '../../components/Button/Button'
+import FeedEdit from '../../components/Feed/FeedEdit/FeedEdit'
+import Input from '../../components/Form/Input/Input'
+import Paginator from '../../components/Paginator/Paginator'
+import Loader from '../../components/Loader/Loader'
+import ErrorHandler from '../../components/ErrorHandler/ErrorHandler'
+import './Feed.css'
 import axios from 'axios'
 
 const API_URL = 'http://localhost:3000/api'
@@ -22,96 +22,92 @@ class Feed extends Component {
     postPage: 1,
     postsLoading: true,
     editLoading: false
-  };
+  }
 
-  componentDidMount = async() =>{
-    try{
+  componentDidMount = async () => {
+    try {
       let userStatus = await axios.get(API_URL)
-      this.setState({ status: userStatus.status });
+      this.setState({ status: userStatus.status })
+    } catch (err) {
+      console.error('Error when fetching status ', err)
     }
-    catch(err) {
-      console.error("Error when fetching status ", err)
-    }
-    await this.loadPosts();
+    await this.loadPosts()
   }
 
   loadPosts = async direction => {
     if (direction) {
-      this.setState({ postsLoading: true, posts: [] });
+      this.setState({ postsLoading: true, posts: [] })
     }
-    let page = this.state.postPage;
+    let page = this.state.postPage
     if (direction === 'next') {
-      page++;
-      this.setState({ postPage: page });
+      page++
+      this.setState({ postPage: page })
     }
     if (direction === 'previous') {
-      page--;
-      this.setState({ postPage: page });
+      page--
+      this.setState({ postPage: page })
     }
-    try{
-      let resData = await axios.get(API_URL+'/feed/posts')
+    try {
+      let resData = await axios.get(API_URL + '/feed/posts')
       resData = resData.data
       this.setState({
         posts: resData.posts,
         totalPosts: resData.totalItems,
         postsLoading: false
       })
+    } catch (err) {
+      console.error('fetching posts failed ', err)
     }
-    catch(err){
-      console.error("fetching posts failed ", err)
-    }
-
-  };
+  }
 
   statusUpdateHandler = async event => {
-    event.preventDefault();
-    try{
+    event.preventDefault()
+    try {
       let res = await axios.get(API_URL)
       if (res.status !== 200 && res.status !== 201) {
-        throw new Error("Can't update status!");
+        throw new Error("Can't update status!")
       }
-      console.log("Response data ", res)
+      console.log('Response data ', res)
+    } catch (err) {
+      console.error('Cant update status', err)
     }
-    catch(err) {
-      console.error("Cant update status", err)
-    }
-  };
+  }
 
   newPostHandler = () => {
-    this.setState({ isEditing: true });
-  };
+    this.setState({ isEditing: true })
+  }
 
   startEditPostHandler = postId => {
     this.setState(prevState => {
-      const loadedPost = { ...prevState.posts.find(p => p._id === postId) };
+      const loadedPost = { ...prevState.posts.find(p => p._id === postId) }
 
       return {
         isEditing: true,
         editPost: loadedPost
-      };
-    });
-  };
+      }
+    })
+  }
 
   cancelEditHandler = () => {
-    this.setState({ isEditing: false, editPost: null });
-  };
+    this.setState({ isEditing: false, editPost: null })
+  }
 
   finishEditHandler = async postData => {
     this.setState({
       editLoading: true
-    });
+    })
     // Set up data (with image!)
-    try{
-      let url = API_URL+'/feed/posts';
+    try {
+      let url = API_URL + '/feed/posts'
       let resData
       if (this.state.editPost) {
-        url = API_URL;
+        url = API_URL
         //resData = await axios.put(url)
       } else {
         resData = await axios.post(url, postData)
       }
       if (resData.status !== 200 && resData.status !== 201) {
-        throw new Error('Creating or editing a post failed!');
+        throw new Error('Creating or editing a post failed!')
       }
       resData = resData.data
       const post = {
@@ -120,67 +116,63 @@ class Feed extends Component {
         content: resData.post.content,
         creator: resData.post.creator,
         createdAt: resData.post.createdAt
-      };
-      console.log("POSTS UPDATED ", resData)
+      }
+      console.log('POSTS UPDATED ', resData)
       this.setState(prevState => {
-        let updatedPosts = [...prevState.posts];
+        let updatedPosts = [...prevState.posts]
         if (prevState.editPost) {
-          const postIndex = prevState.posts.findIndex(
-            p => p._id === prevState.editPost._id
-          );
-          updatedPosts[postIndex] = post;
+          const postIndex = prevState.posts.findIndex(p => p._id === prevState.editPost._id)
+          updatedPosts[postIndex] = post
         } else if (prevState.posts.length < 2) {
-          updatedPosts = prevState.posts.concat(post);
+          updatedPosts = prevState.posts.concat(post)
         }
         return {
           posts: updatedPosts,
           isEditing: false,
           editPost: null,
           editLoading: false
-        };
-      });
-    }
-    catch(err) {
-      console.error(err);
+        }
+      })
+    } catch (err) {
+      console.error(err)
       this.setState({
         isEditing: false,
         editPost: null,
         editLoading: false,
         error: err
-      });
+      })
     }
-  };
+  }
 
   statusInputChangeHandler = (input, value) => {
-    this.setState({ status: value });
-  };
+    this.setState({ status: value })
+  }
 
   deletePostHandler = async postId => {
-    this.setState({ postsLoading: true });
-    try{
+    this.setState({ postsLoading: true })
+    try {
       let res = await axios.get(API_URL)
       if (res.status !== 200 && res.status !== 201) {
-        throw new Error('Deleting a post failed!');
+        throw new Error('Deleting a post failed!')
       }
-      console.log(res);
+      console.log(res)
       this.setState(prevState => {
-        const updatedPosts = prevState.posts.filter(p => p._id !== postId);
-        return { posts: updatedPosts, postsLoading: false };
-      });
+        const updatedPosts = prevState.posts.filter(p => p._id !== postId)
+        return { posts: updatedPosts, postsLoading: false }
+      })
+    } catch (error) {
+      console.error(error)
+      this.setState({ postsLoading: false })
     }
-    catch(error){
-      console.error(error);
-      this.setState({ postsLoading: false });
-    }
-  };
+  }
 
   errorHandler = () => {
-    this.setState({ error: null });
-  };
+    this.setState({ error: null })
+  }
 
   catchError = error => {
-    this.setState({ error: error });
-  };
+    this.setState({ error: error })
+  }
 
   render() {
     return (
@@ -245,8 +237,8 @@ class Feed extends Component {
           )}
         </section>
       </Fragment>
-    );
+    )
   }
 }
 
-export default Feed;
+export default Feed

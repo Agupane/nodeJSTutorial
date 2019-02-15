@@ -20,5 +20,6 @@ router
     ],
     feedController.createPost
   )
+router.route('/posts/:postId').get(feedController.getPost)
 
 module.exports = router
