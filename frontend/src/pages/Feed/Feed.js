@@ -51,7 +51,12 @@ class Feed extends Component {
       let resData = await axios.get(API_URL + '/feed/posts')
       resData = resData.data
       this.setState({
-        posts: resData.posts,
+        posts: resData.posts.map(post => {
+          return {
+            ...post,
+            imagePath: post.imageUrl
+          }
+        }),
         totalPosts: resData.totalItems,
         postsLoading: false
       })
@@ -101,8 +106,8 @@ class Feed extends Component {
       let url = API_URL + '/feed/posts'
       let resData
       if (this.state.editPost) {
-        url = API_URL
-        //resData = await axios.put(url)
+        url = API_URL + '/feed/posts/' + this.state.editPost._id
+        resData = await axios.put(url, postData)
       } else {
         resData = await axios.post(url, postData)
       }
@@ -134,7 +139,7 @@ class Feed extends Component {
         }
       })
     } catch (err) {
-      console.error(err)
+      console.error('error on updating/creating post', err)
       this.setState({
         isEditing: false,
         editPost: null,

@@ -20,7 +20,6 @@ class SinglePost extends Component {
     try {
       let resData = await axios.get(API_URL + 'feed/posts/' + postId)
       let postData = resData.data
-      console.log("img url ", postData.post.imageUrl)
       this.setState({
         title: postData.post.title,
         author: postData.post.creator.name,
@@ -29,7 +28,7 @@ class SinglePost extends Component {
         content: postData.post.content
       })
     } catch (error) {
-      console.error("error: ", error)
+      console.error('error: ', error)
     }
   }
 

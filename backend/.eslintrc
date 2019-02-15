@@ -10,8 +10,5 @@
         "ecmaFeatures": {
             "jsx": true
         }
-    },
-    "rules": {
-        "import/no-webpack-loader-syntax": "off"
     }
 }

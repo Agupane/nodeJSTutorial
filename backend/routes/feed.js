@@ -20,6 +20,9 @@ router
     ],
     feedController.createPost
   )
-router.route('/posts/:postId').get(feedController.getPost)
+router
+  .route('/posts/:postId')
+  .get(feedController.getPost)
+  .put(feedController.updatePost)
 
 module.exports = router
