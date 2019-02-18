@@ -13,8 +13,8 @@ app.use(bodyParser.json())
 app.use(cors())
 
 /** Configures routes **/
-app.use('/api', indexRoutes)
 app.use('/api/images', express.static(path.join(__dirname, 'assets/images')))
+app.use('/api', indexRoutes)
 
 /** Error handling **/
 app.use((error, req, res, next) => {

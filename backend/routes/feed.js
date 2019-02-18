@@ -3,13 +3,14 @@ const { body } = require('express-validator/check')
 const feedController = require('../controllers/feed')
 
 const router = express.Router()
-
+const isAuth = require('../middlewares/isAuth')
 // Current URL: /api/feed
 
 router
   .route('/posts')
-  .get(feedController.getPosts)
+  .get(isAuth, feedController.getPosts)
   .post(
+    isAuth,
     [
       body('title')
         .trim()
@@ -22,8 +23,8 @@ router
   )
 router
   .route('/posts/:postId')
-  .get(feedController.getPost)
-  .put(feedController.updatePost)
-  .delete(feedController.deletePost)
+  .get(isAuth, feedController.getPost)
+  .put(isAuth, feedController.updatePost)
+  .delete(isAuth, feedController.deletePost)
 
 module.exports = router

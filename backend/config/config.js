@@ -16,7 +16,10 @@ const envVarsSchema = Joi.object({
     .description('Mongo DB admin user'),
   MONGO_DB_NAME: Joi.string()
     .required()
-    .description('Mongo DB name')
+    .description('Mongo DB name'),
+  ENCRYPT_PK: Joi.string()
+    .required()
+    .description('PK used for sign tokens')
 })
   .unknown()
   .required()
@@ -33,7 +36,8 @@ const config = {
     user: envVars.MONGO_USER,
     db: envVars.MONGO_DB_NAME,
     pwd: envVars.MONGO_PWD
-  }
+  },
+  secretPK: envVars.ENCRYPT_PK
 }
 
 module.exports = config
